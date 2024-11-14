@@ -56,9 +56,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',  # Django REST Framework
-    'rest_framework_simplejwt.token_blacklist',  # Token blacklist for JWT
+    'rest_framework_simplejwt',
     'users',  # Custom app for user management
     'model',
+    'history',
 ]
 
 MIDDLEWARE = [
@@ -147,9 +148,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Django REST Framework configuration
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+    'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    ],
 }
 
 # Simple JWT settings
