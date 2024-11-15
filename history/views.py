@@ -12,6 +12,7 @@ def view_history(request):
     history = SearchHistory.objects.filter(user=request.user).order_by('-timestamp')
     print(f"Found {history.count()} history records for user {request.user}")
     history_data = [{
+        'id': entry.id,
         'predicted_class_name': entry.predicted_class_name,
         'predicted_class_index': entry.predicted_class_index,
         'predictions': entry.predictions,

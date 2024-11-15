@@ -1,12 +1,10 @@
-# users/views.py
-
 from rest_framework import generics, status, permissions
 from rest_framework.response import Response
 from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import UserSerializer
-from .serializers import ProfileSerializer, SearchHistorySerializer
+from rest_framework.views import APIView
+from .serializers import UserSerializer, ProfileSerializer, SearchHistorySerializer
 from .models import Profile, SearchHistory
 
 # Vue pour l'inscription
@@ -19,6 +17,8 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+
+        # Générer les tokens JWT
         refresh = RefreshToken.for_user(user)
         return Response({
             "user": serializer.data,
@@ -27,8 +27,6 @@ class RegisterView(generics.CreateAPIView):
         })
 
 # Vue pour la déconnexion
-from rest_framework.views import APIView
-
 class LogoutView(APIView):
     permission_classes = (AllowAny,)
 
@@ -40,13 +38,13 @@ class LogoutView(APIView):
             return Response({"message": "Déconnexion réussie"}, status=status.HTTP_205_RESET_CONTENT)
         except Exception as e:
             return Response({"error": "Erreur lors de la déconnexion"}, status=status.HTTP_400_BAD_REQUEST)
+
 # Vue pour afficher et mettre à jour le profil de l'utilisateur
 class ProfileView(generics.RetrieveUpdateAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = ProfileSerializer
 
     def get_object(self):
-        # Retourne le profil de l'utilisateur connecté
         return Profile.objects.get(user=self.request.user)
 
 # Vue pour créer une nouvelle entrée dans l'historique de recherche
@@ -67,5 +65,4 @@ class SearchHistoryListView(generics.ListAPIView):
     serializer_class = SearchHistorySerializer
 
     def get_queryset(self):
-        # Retourne l'historique de recherche de l'utilisateur connecté
         return SearchHistory.objects.filter(user=self.request.user).order_by('-timestamp')

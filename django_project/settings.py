@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'users',  # Custom app for user management
     'model',
     'history',
+    'favoris',
 ]
 
 MIDDLEWARE = [

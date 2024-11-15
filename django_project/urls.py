@@ -22,6 +22,6 @@ urlpatterns = [
     path('api/users/', include('users.urls')),
      path('model/', include('model.urls')),  # Inclure les URLs de l'application model
     path('history/', include('history.urls')),  # Include the history app URLs
-    # Add this to include the login view
+     path('favorites/', include('favoris.urls')),
 
 ]
