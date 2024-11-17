@@ -30,6 +30,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 from pathlib import Path
 from datetime import timedelta
 
+from celery.schedules import crontab
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -61,6 +63,8 @@ INSTALLED_APPS = [
     'model',
     'history',
     'favoris',
+    'django_celery_beat',
+    'notification',
 ]
 
 MIDDLEWARE = [
@@ -160,4 +164,19 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     # Refresh token lifetime
     'ROTATE_REFRESH_TOKENS': True,                  # Rotate refresh tokens
     'BLACKLIST_AFTER_ROTATION': True,               # Blacklist old tokens after rotation
+}
+
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Si vous utilisez Redis
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+
+
+CELERY_BEAT_SCHEDULE = {
+    'send-consigne-notifications-every-10-seconds': {
+        'task': 'notification.tasks.send_notification',
+        'schedule': 10.0,  # Tâche exécutée toutes les 10 secondes
+        'args': ()
+    },
 }

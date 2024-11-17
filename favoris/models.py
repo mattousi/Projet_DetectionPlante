@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from history.models import SearchHistory  # Importez le modèle d'historique
+from history.models import SearchHistory  # Assurez-vous que le modèle SearchHistory est correctement importé
 
 class Favorite(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='favorites')

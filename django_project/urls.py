@@ -23,5 +23,6 @@ urlpatterns = [
      path('model/', include('model.urls')),  # Inclure les URLs de l'application model
     path('history/', include('history.urls')),  # Include the history app URLs
      path('favorites/', include('favoris.urls')),
+    path('api/', include('notification.urls')),
 
 ]
