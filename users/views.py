@@ -4,8 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
-from .serializers import UserSerializer, ProfileSerializer, SearchHistorySerializer
-from .models import Profile, SearchHistory
+from .serializers import UserSerializer
 
 # Vue pour l'inscription
 class RegisterView(generics.CreateAPIView):
@@ -21,7 +20,11 @@ class RegisterView(generics.CreateAPIView):
         # Générer les tokens JWT
         refresh = RefreshToken.for_user(user)
         return Response({
-            "user": serializer.data,
+            "user": {
+                "id": user.id,
+                "username": user.username,
+                "email": user.email,
+            },
             "refresh": str(refresh),
             "access": str(refresh.access_token),
         })
@@ -36,33 +39,5 @@ class LogoutView(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response({"message": "Déconnexion réussie"}, status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
+        except Exception:
             return Response({"error": "Erreur lors de la déconnexion"}, status=status.HTTP_400_BAD_REQUEST)
-
-# Vue pour afficher et mettre à jour le profil de l'utilisateur
-class ProfileView(generics.RetrieveUpdateAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = ProfileSerializer
-
-    def get_object(self):
-        return Profile.objects.get(user=self.request.user)
-
-# Vue pour créer une nouvelle entrée dans l'historique de recherche
-class SearchHistoryCreateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-
-    def post(self, request):
-        query = request.data.get("query")
-        if query:
-            search_entry = SearchHistory.objects.create(user=request.user, query=query)
-            serializer = SearchHistorySerializer(search_entry)
-            return Response(serializer.data)
-        return Response({"error": "Query not provided"}, status=400)
-
-# Vue pour afficher l'historique de recherche de l'utilisateur
-class SearchHistoryListView(generics.ListAPIView):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = SearchHistorySerializer
-
-    def get_queryset(self):
-        return SearchHistory.objects.filter(user=self.request.user).order_by('-timestamp')
